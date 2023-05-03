@@ -35,4 +35,4 @@ If you want to support this project, leave a ⭐.
 
 ___
 
-This project was created with 💚 by [Walmyr](https://walmyr.dev).
+This project was created with 💚 
