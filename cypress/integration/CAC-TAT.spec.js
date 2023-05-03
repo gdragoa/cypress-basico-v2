@@ -7,38 +7,45 @@ describe('Central de Atendimento ao Cliente TAT', function () {
     })
 
     it('verifica o título da aplicação', function () {
+
         cy.title().should('equal', 'Central de Atendimento ao Cliente TAT')
 
     })
 
     it('preenche os campos obrigatórios e envia o formulário', function () {
+
+        cy.clock()
+
         cy.get('#firstName').type('Ana')
-
         cy.get('#lastName').type('Carolina')
-
         cy.get('#email').type('anagamaral@outlook.com', { delay: 0 })
-
         cy.get('#phone').type('17991660262)')
-
         cy.get('#open-text-area').type('teste')
-
         cy.contains('button', 'Enviar').click()
 
         cy.get('.success').should('be.visible')
+
+        cy.tick(3000)
+
+        cy.get('.success').should('not.be.visible')
+
     })
 
     it('exibe mensagem de erro ao submeter o formulário com um email com formatação inválida', function () {
+
+        cy.clock()
+
         cy.get('#firstName').type('Ana')
-
         cy.get('#lastName').type('Carolina')
-
         cy.get('#email').type('anagamaral.com')
-
         cy.get('#open-text-area').type('teste')
-
         cy.contains('button', 'Enviar').click()
 
         cy.get('.error').should('be.visible')
+
+        cy.tick(3000)
+
+        cy.get('.error').should('not.be.visible')
 
     })
 
@@ -50,19 +57,20 @@ describe('Central de Atendimento ao Cliente TAT', function () {
 
     it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário', function () {
 
+        cy.clock()
+
         cy.get('#firstName').type('Ana')
-
         cy.get('#lastName').type('Carolina')
-
         cy.get('#email').type('anagamaral@outlook.com')
-
         cy.get('#phone-checkbox').check()
-
         cy.get('#open-text-area').type('teste')
-
         cy.contains('button', 'Enviar').click()
 
         cy.get('.error').should('be.visible')
+
+        cy.tick(3000)
+
+        cy.get('.error').should('not.be.visible')
 
     })
 
@@ -94,16 +102,28 @@ describe('Central de Atendimento ao Cliente TAT', function () {
     })
 
     it('exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios', function () {
+
+        cy.clock()
+
         cy.contains('button', 'Enviar').click()
 
         cy.get('.error').should('be.visible')
+
+        cy.tick(3000)
+
+        cy.get('.success').should('not.be.visible')
     })
 
     it('envia o formuário com sucesso usando um comando customizado', function () {
+
+        cy.clock()
+
         cy.fillMandatoryFieldsAndSubmit()
 
         cy.get('.success').should('be.visible')
+        cy.tick(3000)
 
+        cy.get('.success').should('not.be.visible')
     })
 
     it('seleciona um produto (YouTube) por seu texto', function () {
@@ -192,8 +212,45 @@ describe('Central de Atendimento ao Cliente TAT', function () {
         cy.contains('Talking About Test').should('be.visible')
     })
 
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke()', function () {
+        cy.get('.success')
+            .should('not.be.visible')
+            .invoke('show')
+            .should('be.visible')
+            .and('contain', 'Mensagem enviada com sucesso.')
+            .invoke('hide')
+            .should('not.be.visible')
 
+        cy.get('.error')
+            .should('not.be.visible')
+            .invoke('show')
+            .should('be.visible')
+            .and('contain', 'Valide os campos obrigatórios!')
+            .invoke('hide')
+            .should('not.be.visible')
+    })
+
+    it('preenche a area de texto usando o comando invoke', function () {
+        cy.get('#open-text-area')
+            .invoke('val', 'banana')
+            .should('have.value', 'banana')
+
+    })
+
+    it('faz uma requisição HTTP', function () {
+        cy.request({
+            method: 'GET',
+            url: 'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html'
+        }).then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.statusText).to.equal('OK');
+            expect(response.body).to.include('CAC TAT');
+        })
+    })
 })
+
+
+
 
 
 
